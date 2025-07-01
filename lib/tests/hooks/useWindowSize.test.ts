@@ -8,15 +8,22 @@ const resizeWindow = (width: number, height: number) => {
 };
 
 describe('useWindowSize Hook', () => {
-  it('should return the initial window size', () => {
+  it('should return the window size after mount', () => {
     const { result } = renderHook(() => useWindowSize());
 
+    // After mounting, should have actual window dimensions
     expect(result.current.width).toBe(window.innerWidth);
     expect(result.current.height).toBe(window.innerHeight);
+    expect(typeof result.current.width).toBe('number');
+    expect(typeof result.current.height).toBe('number');
   });
 
   it('should update width and height on window resize', () => {
     const { result } = renderHook(() => useWindowSize());
+
+    // Should have initial window dimensions
+    expect(result.current.width).toBe(window.innerWidth);
+    expect(result.current.height).toBe(window.innerHeight);
 
     act(() => {
       resizeWindow(800, 600);
@@ -36,13 +43,20 @@ describe('useWindowSize Hook', () => {
   it('should not update state when unmounted', () => {
     const { result, unmount } = renderHook(() => useWindowSize());
 
+    // Should have initial window dimensions
+    expect(result.current.width).toBe(window.innerWidth);
+    expect(result.current.height).toBe(window.innerHeight);
+
+    const initialWidth = result.current.width;
+    const initialHeight = result.current.height;
+
     unmount();
 
     act(() => {
       resizeWindow(500, 500);
     });
 
-    expect(result.current.width).not.toBe(500);
-    expect(result.current.height).not.toBe(500);
+    expect(result.current.width).toBe(initialWidth);
+    expect(result.current.height).toBe(initialHeight);
   });
 });
